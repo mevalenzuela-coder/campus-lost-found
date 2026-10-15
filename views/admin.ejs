@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Campus Lost and Found</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            padding: 25px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        h1, h2 { color: #234b76; }
+        .item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #234b76;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .status { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome, <strong><%= user.name %></strong>!</p>
+
+        <p><a href="/dashboard">User Dashboard</a></p>
+
+        <h2>Pending Item Reports</h2>
+
+        <% if (items.length === 0) { %>
+            <p>No pending reports to review.</p>
+        <% } %>
+
+        <% items.forEach(item => { %>
+            <div class="item">
+                <h3><%= item.item_name %></h3>
+                <p><strong>Type:</strong> <%= item.report_type %></p>
+                <p><strong>Description:</strong> <%= item.description %></p>
+                <p><strong>Category:</strong> <%= item.category %></p>
+                <p><strong>Location:</strong> <%= item.location %></p>
+                <p><strong>Date:</strong>
+                    <%= String(item.date_lost_or_found).slice(0, 10) %>
+                </p>
+                <p><strong>Reported by:</strong> <%= item.reporter_name %></p>
+                <p class="status">Status: <%= item.status %></p>
+
+                <form action="/admin/approve/<%= item.id %>" method="POST">
+                    <button type="submit">Approve Report</button>
+                </form>
+            </div>
+        <% }) %>
+    </div>
+</body>
+</html>

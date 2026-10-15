@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Campus Lost and Found</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            margin: 0;
+            padding: 40px 15px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        h1 { text-align: center; color: #234b76; }
+        label { display: block; margin-top: 15px; }
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 11px;
+            margin-top: 6px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #234b76;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .message { color: #b42318; text-align: center; }
+        a { color: #234b76; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+
+        <p class="message"><%= error || '' %></p>
+
+        <form action="/login" method="POST">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email"
+                   required maxlength="150">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password"
+                   required>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p>Don't have an account?
+            <a href="/register">Register here</a>
+        </p>
+        <p><a href="/">Back to Home</a></p>
+    </div>
+</body>
+</html>

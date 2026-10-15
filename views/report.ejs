@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report an Item | Campus Lost and Found</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            margin: 0;
+            padding: 30px 15px;
+        }
+        .container {
+            max-width: 550px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        h1 { color: #234b76; }
+        label { display: block; margin-top: 15px; }
+        input, textarea, select {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 11px;
+            margin-top: 6px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #234b76;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .message { color: #b42318; }
+        a { color: #234b76; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Report a Lost or Found Item</h1>
+
+        <p class="message"><%= error || '' %></p>
+
+        <form action="/report" method="POST">
+            <label for="item_name">Item Name</label>
+            <input type="text" id="item_name" name="item_name"
+                   required maxlength="150">
+
+            <label for="description">Description</label>
+            <textarea id="description" name="description"
+                      required rows="4"></textarea>
+
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+                <option value="">Select category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Documents">Documents</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Accessories">Accessories</option>
+                <option value="School Supplies">School Supplies</option>
+                <option value="Others">Others</option>
+            </select>
+
+            <label for="location">Location</label>
+            <input type="text" id="location" name="location"
+                   required maxlength="150">
+
+            <label for="date_lost_or_found">Date Lost or Found</label>
+            <input type="date" id="date_lost_or_found"
+                   name="date_lost_or_found" required>
+
+            <label for="report_type">Report Type</label>
+            <select id="report_type" name="report_type" required>
+                <option value="">Select report type</option>
+                <option value="Lost">Lost Item</option>
+                <option value="Found">Found Item</option>
+            </select>
+
+            <button type="submit">Submit Report</button>
+        </form>
+
+        <p><a href="/dashboard">Back to Dashboard</a></p>
+        <p><a href="/items">View All Reports</a></p>
+    </div>
+</body>
+</html>

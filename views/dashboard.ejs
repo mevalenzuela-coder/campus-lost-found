@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Campus Lost and Found</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            margin: 0;
+            padding: 30px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        h1 { color: #234b76; }
+        .count {
+            padding: 20px;
+            background: #eaf1f8;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 18px;
+            background: #234b76;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Campus Lost and Found Dashboard</h1>
+
+        <p>Welcome, <strong><%= user.name %></strong>!</p>
+        <p>Email: <%= user.email %></p>
+        <p>Role: <%= user.role %></p>
+
+        <div class="count">
+            <h2>Total Item Reports: <%= totalItems %></h2>
+        </div>
+
+        <p>This is your protected dashboard.</p>
+
+        <p><a href="/report">Report a Lost or Found Item</a></p>
+        <p><a href="/items">View All Item Reports</a></p>
+        
+        <form action="/logout" method="POST">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</body>
+</html>

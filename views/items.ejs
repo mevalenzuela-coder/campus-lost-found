@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Reports | Campus Lost and Found</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            padding: 25px;
+        }
+        .container {
+            max-width: 950px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        .item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        h1, h2 { color: #234b76; }
+        a { color: #234b76; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lost and Found Item Reports</h1>
+
+        <p>Logged in as: <strong><%= user.name %></strong></p>
+
+        <p>
+            <a href="/report">+ Report an Item</a> |
+            <a href="/dashboard">Dashboard</a>
+        </p>
+
+        <% if (items.length === 0) { %>
+            <p>No item reports yet.</p>
+        <% } %>
+
+        <% items.forEach(item => { %>
+            <div class="item">
+                <h2><%= item.item_name %></h2>
+                <p><strong>Type:</strong> <%= item.report_type %></p>
+                <p><strong>Description:</strong> <%= item.description %></p>
+                <p><strong>Category:</strong> <%= item.category %></p>
+                <p><strong>Location:</strong> <%= item.location %></p>
+                <p><strong>Date:</strong>
+                    <%= String(item.date_lost_or_found).slice(0, 10) %>
+                </p>
+                <p><strong>Status:</strong> <%= item.status %></p>
+                <p><strong>Reported by:</strong> <%= item.reporter_name %></p>
+            </div>
+        <% }) %>
+    </div>
+</body>
+</html>
