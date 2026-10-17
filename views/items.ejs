@@ -26,6 +26,18 @@
         }
         h1, h2 { color: #234b76; }
         a { color: #234b76; }
+        input, select, button {
+            padding: 10px;
+            margin: 5px 3px 5px 0;
+        }
+        button {
+            background: #234b76;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .filters { margin: 20px 0; }
     </style>
 </head>
 <body>
@@ -39,8 +51,36 @@
             <a href="/dashboard">Dashboard</a>
         </p>
 
+        <form action="/items" method="GET" class="filters">
+            <label for="q">Search items:</label><br>
+            <input
+                type="text"
+                id="q"
+                name="q"
+                placeholder="Name, description, category, location"
+                value="<%= search || '' %>"
+            >
+
+            <select name="type">
+                <option value="">All Types</option>
+                <option value="Lost" <%= selectedType === 'Lost' ? 'selected' : '' %>>Lost</option>
+                <option value="Found" <%= selectedType === 'Found' ? 'selected' : '' %>>Found</option>
+            </select>
+
+            <select name="status">
+                <option value="">All Statuses</option>
+                <option value="Pending" <%= selectedStatus === 'Pending' ? 'selected' : '' %>>Pending</option>
+                <option value="Approved" <%= selectedStatus === 'Approved' ? 'selected' : '' %>>Approved</option>
+                <option value="Claimed" <%= selectedStatus === 'Claimed' ? 'selected' : '' %>>Claimed</option>
+                <option value="Returned" <%= selectedStatus === 'Returned' ? 'selected' : '' %>>Returned</option>
+            </select>
+
+            <button type="submit">Search / Filter</button>
+            <a href="/items">Clear</a>
+        </form>
+
         <% if (items.length === 0) { %>
-            <p>No item reports yet.</p>
+            <p>No matching item reports found.</p>
         <% } %>
 
         <% items.forEach(item => { %>

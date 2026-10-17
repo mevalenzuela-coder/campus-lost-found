@@ -276,15 +276,48 @@ app.post('/report', requireLogin, (req, res) => {
     });
 });
 
+
 app.get('/items', requireLogin, (req, res) => {
-    const sql = `
+    const q = (req.query.q || '').trim();
+    const type = req.query.type || '';
+    const status = req.query.status || '';
+
+    let sql = `
         SELECT items.*, users.name AS reporter_name
         FROM items
         JOIN users ON items.user_id = users.id
-        ORDER BY items.id DESC
+        WHERE 1 = 1
     `;
 
-    db.query(sql, (err, results) => {
+    const params = [];
+
+    if (q) {
+        sql += `
+            AND (
+                items.item_name LIKE ?
+                OR items.description LIKE ?
+                OR items.category LIKE ?
+                OR items.location LIKE ?
+            )
+        `;
+
+        const searchTerm = `%${q}%`;
+        params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+    }
+
+    if (['Lost', 'Found'].includes(type)) {
+        sql += ' AND items.report_type = ?';
+        params.push(type);
+    }
+
+    if (['Pending', 'Approved', 'Claimed', 'Returned'].includes(status)) {
+        sql += ' AND items.status = ?';
+        params.push(status);
+    }
+
+    sql += ' ORDER BY items.id DESC';
+
+    db.query(sql, params, (err, results) => {
         if (err) {
             console.error(err.message);
             return res.status(500).send('Could not load item reports.');
@@ -292,7 +325,10 @@ app.get('/items', requireLogin, (req, res) => {
 
         res.render('items', {
             items: results,
-            user: req.session.user
+            user: req.session.user,
+            search: q,
+            selectedType: type,
+            selectedStatus: status
         });
     });
 });
