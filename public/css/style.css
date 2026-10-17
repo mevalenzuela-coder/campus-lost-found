@@ -47,10 +47,23 @@ header h1, nav h1 {
     font-size: 22px;
 }
 
+
 nav a {
     color: var(--white);
-    margin-right: 18px;
+    background-color: var(--primary);
+    margin-right: 10px;
     font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+    padding: 10px 16px;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+nav a:hover {
+    background-color: var(--accent);
+    color: var(--white);
 }
 
 main, .container {

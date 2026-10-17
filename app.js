@@ -32,11 +32,10 @@ app.get('/', (req, res) => {
             return res.status(500).send('Database query failed.');
         }
 
-        res.send(`
-            <h1>Campus Lost and Found System</h1>
-            <p>Welcome to our system!</p>
-            <p>Total item reports: ${results[0].total}</p>
-        `);
+        res.render('home', {
+            totalItems: results[0].total,
+            user: req.session.user || null
+        });
     });
 });
 

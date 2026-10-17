@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Lost and Found System</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav>
+        <h1>Campus Lost and Found System</h1>
+        <a href="/">Home</a>
+
+        <% if (user) { %>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/items">View Items</a>
+            <a href="/report">Report Item</a>
+
+            <% if (user.role === 'admin') { %>
+                <a href="/admin">Admin</a>
+            <% } %>
+
+            <form action="/logout" method="POST" class="nav-logout-form">
+                <button type="submit">Logout</button>
+            </form>
+        <% } else { %>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        <% } %>
+    </nav>
+
+    <main>
+        <h2>Welcome to our system!</h2>
+        <p>Helping our campus community reunite with lost belongings.</p>
+        <p>Total item reports: <strong><%= totalItems %></strong></p>
+    </main>
+</body>
+</html>
