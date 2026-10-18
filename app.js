@@ -26,18 +26,47 @@ app.use(session({
 }));
 
 app.get('/', (req, res) => {
-    db.query('SELECT COUNT(*) AS total FROM items', (err, results) => {
+    const statsSql = `
+        SELECT
+            COUNT(*) AS total,
+            SUM(CASE WHEN report_type = 'Lost' THEN 1 ELSE 0 END) AS lost,
+            SUM(CASE WHEN report_type = 'Found' THEN 1 ELSE 0 END) AS found
+        FROM items
+        WHERE status = 'Approved'
+    `;
+
+    const recentSql = `
+        SELECT items.*, users.name AS reporter_name
+        FROM items
+        JOIN users ON items.user_id = users.id
+        WHERE items.status = 'Approved'
+        ORDER BY items.id DESC
+        LIMIT 4
+    `;
+
+    db.query(statsSql, (err, statsResults) => {
         if (err) {
             console.error(err.message);
-            return res.status(500).send('Database query failed.');
+            return res.status(500).send('Could not load homepage statistics.');
         }
 
-        res.render('home', {
-            totalItems: results[0].total,
-            user: req.session.user || null
+        db.query(recentSql, (err, recentItems) => {
+            if (err) {
+                console.error(err.message);
+                return res.status(500).send('Could not load recent items.');
+            }
+
+            res.render('home', {
+                totalItems: statsResults[0].total || 0,
+                lostItems: statsResults[0].lost || 0,
+                foundItems: statsResults[0].found || 0,
+                recentItems,
+                user: req.session.user || null
+            });
         });
     });
 });
+
 
 app.get('/login', (req, res) => {
     if (req.session.user) {
