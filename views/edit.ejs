@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Lost and Found Item</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        h1 { color: #183153; }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        textarea { min-height: 100px; }
+
+        button, .back {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 11px 16px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button {
+            background: #176b45;
+            color: white;
+        }
+
+        .back {
+            background: #e5e7eb;
+            color: #222;
+            margin-left: 8px;
+        }
+
+        .error {
+            color: #b42318;
+            background: #fee4e2;
+            padding: 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Item Report</h1>
+        <p>Update the details of your pending report.</p>
+
+        <% if (error) { %>
+            <p class="error"><%= error %></p>
+        <% } %>
+
+        <form action="/items/<%= item.id %>/edit" method="POST">
+            <label for="item_name">Item Name</label>
+            <input
+                type="text"
+                id="item_name"
+                name="item_name"
+                maxlength="150"
+                value="<%= item.item_name %>"
+                required
+            >
+
+            <label for="description">Description</label>
+            <textarea
+                id="description"
+                name="description"
+                required
+            ><%= item.description %></textarea>
+
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+                <% ['Electronics', 'Documents', 'Clothing', 'Accessories', 'School Supplies', 'Others'].forEach(category => { %>
+                    <option
+                        value="<%= category %>"
+                        <%= item.category === category ? 'selected' : '' %>
+                    ><%= category %></option>
+                <% }) %>
+            </select>
+
+            <label for="location">Location</label>
+            <input
+                type="text"
+                id="location"
+                name="location"
+                maxlength="150"
+                value="<%= item.location %>"
+                required
+            >
+
+            <label for="date_lost_or_found">Date Lost or Found</label>
+            <input
+                type="date"
+                id="date_lost_or_found"
+                name="date_lost_or_found"
+                value="<%= item.date_lost_or_found instanceof Date ? item.date_lost_or_found.toISOString().slice(0, 10) : String(item.date_lost_or_found).slice(0, 10) %>"
+                required
+            >
+
+            <label for="report_type">Report Type</label>
+            <select id="report_type" name="report_type" required>
+                <option value="Lost" <%= item.report_type === 'Lost' ? 'selected' : '' %>>Lost</option>
+                <option value="Found" <%= item.report_type === 'Found' ? 'selected' : '' %>>Found</option>
+            </select>
+
+            <button type="submit">Save Changes</button>
+            <a class="back" href="/items">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

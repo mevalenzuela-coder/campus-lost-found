@@ -363,6 +363,149 @@ app.get('/items', requireLogin, (req, res) => {
     });
 });
 
+app.get('/items/:id/edit', requireLogin, (req, res) => {
+    const itemId = Number(req.params.id);
+
+    if (!Number.isInteger(itemId) || itemId < 1) {
+        return res.status(400).send('Invalid item ID.');
+    }
+
+    const sql = `
+        SELECT *
+        FROM items
+        WHERE id = ? AND user_id = ? AND status = 'Pending'
+    `;
+
+    db.query(sql, [itemId, req.session.user.id], (err, results) => {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).send('Could not load item for editing.');
+        }
+
+        if (results.length === 0) {
+            return res.status(404).send(
+                'Item not found, not yours, or no longer pending.'
+            );
+        }
+
+        res.render('edit', {
+            item: results[0],
+            error: ''
+        });
+    });
+});
+
+
+app.post('/items/:id/edit', requireLogin, (req, res) => {
+    const itemId = Number(req.params.id);
+
+    if (!Number.isInteger(itemId) || itemId < 1) {
+        return res.status(400).send('Invalid item ID.');
+    }
+
+    const itemName = (req.body.item_name || '').trim();
+    const description = (req.body.description || '').trim();
+    const category = (req.body.category || '').trim();
+    const location = (req.body.location || '').trim();
+    const date = req.body.date_lost_or_found || '';
+    const reportType = req.body.report_type || '';
+
+    const allowedCategories = [
+        'Electronics',
+        'Documents',
+        'Clothing',
+        'Accessories',
+        'School Supplies',
+        'Others'
+    ];
+
+    const validDate = /^\d{4}-\d{2}-\d{2}$/.test(date)
+        && !Number.isNaN(Date.parse(date))
+        && new Date(date).toISOString().slice(0, 10) === date;
+
+    if (
+        !itemName ||
+        itemName.length > 150 ||
+        !description ||
+        !allowedCategories.includes(category) ||
+        !location ||
+        location.length > 150 ||
+        !validDate ||
+        !['Lost', 'Found'].includes(reportType)
+    ) {
+        return res.status(400).send('Please enter valid item details.');
+    }
+
+    const sql = `
+        UPDATE items
+        SET item_name = ?,
+            description = ?,
+            category = ?,
+            location = ?,
+            date_lost_or_found = ?,
+            report_type = ?
+        WHERE id = ?
+          AND user_id = ?
+          AND status = 'Pending'
+    `;
+
+    db.query(sql, [
+        itemName,
+        description,
+        category,
+        location,
+        date,
+        reportType,
+        itemId,
+        req.session.user.id
+    ], (err, result) => {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).send('Could not update the item.');
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send(
+                'Item not found, not yours, or no longer pending.'
+            );
+        }
+
+        res.redirect('/items');
+    });
+});
+
+
+app.post('/items/:id/delete', requireLogin, (req, res) => {
+    const itemId = Number(req.params.id);
+
+    if (!Number.isInteger(itemId) || itemId < 1) {
+        return res.status(400).send('Invalid item ID.');
+    }
+
+    const sql = `
+        DELETE FROM items
+        WHERE id = ?
+          AND user_id = ?
+          AND status = 'Pending'
+    `;
+
+    db.query(sql, [itemId, req.session.user.id], (err, result) => {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).send('Could not delete the item.');
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send(
+                'Item not found, not yours, or no longer pending.'
+            );
+        }
+
+        res.redirect('/items');
+    });
+});
+
+
 const PORT = process.env.PORT || 3000;
 
 app.get('/register', (req, res) => {
