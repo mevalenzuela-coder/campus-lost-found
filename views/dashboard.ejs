@@ -43,6 +43,12 @@
         <p>Email: <%= user.email %></p>
         <p>Role: <%= user.role %></p>
 
+        <% if (user.role === 'admin') { %>
+    <p>
+        <a href="/admin">Admin Dashboard</a>
+    </p>
+<% } %>
+
         <div class="count">
             <h2>Total Item Reports: <%= totalItems %></h2>
         </div>
