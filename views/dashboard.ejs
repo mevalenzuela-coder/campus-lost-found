@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Campus Lost and Found</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="app-body">
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">📍</span>
+      <div>
+        <strong>Campus</strong>
+        <span>Lost and Found</span>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a href="/dashboard" class="nav-link active"><span class="icon">🏠</span> Dashboard</a>
+      <a href="/items" class="nav-link"><span class="icon">📄</span> Reports</a>
+    </nav>
+    <div class="nav-user">
+      <div class="user-avatar">👤</div>
+      <span class="user-name"><%= user.name %></span>
+      <span class="dropdown-arrow">▼</span>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="container">
+    <div class="welcome-banner">
+      <div>
+        <h1>Welcome, <%= user.name %>!</h1>
+        <p>You're logged in to your Campus Lost and Found account.</p>
+      </div>
+      <div class="welcome-graphic">🎓</div>
+    </div>
+
+    <!-- User Meta Info Card -->
+    <div class="info-card-row">
+      <div class="info-pill">
+        <span class="pill-icon">✉️</span>
+        <div>
+          <small>Email</small>
+          <strong><%= user.email %></strong>
+        </div>
+      </div>
+      <div class="info-pill">
+        <span class="pill-icon">👤</span>
+        <div>
+          <small>Role</small>
+          <strong><%= user.role %></strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Item Reports Metric Card -->
+    <div class="metric-card">
+      <div class="metric-icon">📄</div>
+      <div>
+        <span class="metric-label">Total Item Reports</span>
+        <h2 class="metric-value">0</h2>
+      </div>
+    </div>
+
+    <!-- Action Cards Grid -->
+    <div class="action-grid">
+      <a href="/report" class="action-card blue">
+        <div>
+          <h3>Report a Lost or Found Item</h3>
+          <p>Submit a new report for a lost or found item on campus.</p>
+        </div>
+        <span class="arrow-btn">➔</span>
+      </a>
+
+      <a href="/items" class="action-card teal">
+        <div>
+          <h3>View All Item Reports</h3>
+          <p>Browse all lost and found items reported on campus.</p>
+        </div>
+        <span class="arrow-btn">➔</span>
+      </a>
+    </div>
+
+    <!-- Logout Card -->
+   <a href="/logout" class="logout-card">
+  <div class="logout-left">
+    <span class="logout-icon">🚪</span>
+    <div>
+      <strong>Logout</strong>
+      <small>Sign out from your account.</small>
+    </div>
+  </div>
+  <span class="arrow-btn dark">➔</span>
+</a>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <span>🏛️ Campus Lost and Found</span> • <span>Helping Our Campus Stay Connected</span>
+  </footer>
+
+</body>
+</html>

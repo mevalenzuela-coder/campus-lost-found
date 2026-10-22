@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusFind | Lost and Found</title>
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #f8fafc;
+            color: #1f2937;
+            font-family: Arial, sans-serif;
+        }
+
+        .site-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 14px 5%;
+            background: white;
+            box-shadow: 0 2px 10px #00000010;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            color: #1d4ed8;
+            font-size: 22px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #e1e6ef;
+            text-decoration: none;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover { background: #eff6ff; color: #1d4ed8; }
+
+        .nav-links .report-link {
+            color: white;
+            background: #315bea;
+        }
+
+        .hero {
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 45px 20px;
+            color: white;
+            background:
+                linear-gradient(#11182780, #11182780),
+                url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwwvxslU3LVLxf3qLftgui_UZy03KuzKCkdnmvlU-6Gw&s=10')
+                center/cover no-repeat;
+        }
+
+        .hero h1 {
+            margin: 0 0 12px;
+            font-size: clamp(30px, 5vw, 46px);
+        }
+
+        .hero p {
+            max-width: 600px;
+            line-height: 1.6;
+            margin: 0 0 24px;
+        }
+
+        .search-form {
+            display: flex;
+            width: min(100%, 530px);
+            gap: 8px;
+        }
+
+        .search-form input {
+            flex: 1;
+            min-width: 0;
+            padding: 14px 18px;
+            border: 0;
+            border-radius: 30px;
+            font-size: 14px;
+        }
+
+        .search-form button {
+            border: 0;
+            border-radius: 30px;
+            padding: 0 22px;
+            background: #111827;
+            color: white;
+            cursor: pointer;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .hero-actions a {
+            border: 1px solid #ffffffaa;
+            border-radius: 25px;
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+
+        .hero-actions a:hover { background: #ffffff25; }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: white;
+            padding: 25px 5%;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .recent-section {
+            padding: 35px 5% 55px;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .section-heading h2 { font-size: 20px; margin: 0; }
+
+        .section-heading a {
+            color: #64748b;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .item-card {
+            overflow: hidden;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px #00000010;
+        }
+
+        .item-image {
+            height: 145px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            font-size: 42px;
+        }
+
+        .item-info { padding: 14px; }
+
+        .status {
+            display: inline-block;
+            border-radius: 15px;
+            padding: 4px 8px;
+            font-size: 11px;
+            margin-bottom: 10px;
+        }
+
+        .status-lost { background: #fee2e2; color: #b91c1c; }
+        .status-found { background: #dcfce7; color: #15803d; }
+
+        .item-info h3 {
+            font-size: 15px;
+            margin: 0 0 9px;
+            overflow-wrap: anywhere;
+        }
+
+        .item-meta {
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .category {
+            display: inline-block;
+            background: #f1f5f9;
+            border-radius: 5px;
+            padding: 4px 7px;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #64748b;
+            background: white;
+            border: 1px dashed #cbd5e1;
+            padding: 35px;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 800px) {
+            .items-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .site-nav { padding: 14px 4%; }
+        }
+
+        @media (max-width: 480px) {
+            .items-grid { grid-template-columns: 1fr; }
+            .nav-links { gap: 2px; }
+            .nav-links a { padding: 8px; }
+            .stats { padding: 22px 2%; }
+            .stat-number { font-size: 23px; }
+            .hero { min-height: 330px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="site-nav">
+        <a href="/" class="brand">🔵 CampusFind</a>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/items">Browse</a>
+
+            <% if (user) { %>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/report" class="report-link">+ Report</a>
+
+                <% if (user.role === 'admin') { %>
+                    <a href="/admin">Admin</a>
+                <% } %>
+
+                <form action="/logout" method="POST" style="display:inline;">
+                    <button type="submit">Logout</button>
+                </form>
+            <% } else { %>
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+                <a href="/login" class="report-link">+ Report</a>
+            <% } %>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Lost something?<br>We'll help you find it.</h1>
+        <p>Report lost or found items and reconnect with your campus community.</p>
+
+        <form class="search-form" action="/items" method="GET">
+            <input type="text" name="q" placeholder="Search for items..." aria-label="Search for items">
+            <button type="submit">Search</button>
+        </form>
+
+        <div class="hero-actions">
+            <a href="<%= user ? '/report' : '/login' %>">I Lost Something</a>
+            <a href="<%= user ? '/report' : '/login' %>">I Found Something</a>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div>
+            <div class="stat-number"><%= totalItems %></div>
+            <div class="stat-label">TOTAL ITEMS</div>
+        </div>
+        <div>
+            <div class="stat-number"><%= lostItems %></div>
+            <div class="stat-label">LOST</div>
+        </div>
+        <div>
+            <div class="stat-number"><%= foundItems %></div>
+            <div class="stat-label">FOUND</div>
+        </div>
+    </section>
+
+    <section class="recent-section">
+        <div class="section-heading">
+            <h2>Recent Items</h2>
+            <a href="/items">View All →</a>
+        </div>
+
+        <div class="items-grid">
+            <% if (recentItems.length === 0) { %>
+                <div class="empty-state">
+                    <h3>No approved items yet</h3>
+                    <p>Approved lost and found reports will appear here.</p>
+                </div>
+            <% } %>
+
+            <% recentItems.forEach(item => { %>
+                <a class="item-card" href="/items">
+                    <div class="item-image">📦</div>
+
+                    <div class="item-info">
+                        <span class="status <%= item.report_type === 'Lost' ? 'status-lost' : 'status-found' %>">
+                            <%= item.report_type %>
+                        </span>
+
+                        <h3><%= item.item_name %></h3>
+
+                        <div class="item-meta">
+                            📍 <%= item.location || 'Location not specified' %><br>
+                            👤 <%= item.reporter_name || 'Campus member' %>
+                        </div>
+
+                        <span class="category"><%= item.category || 'Other' %></span>
+                    </div>
+                </a>
+            <% }) %>
+        </div>
+    </section>
+
+</body>
+</html>
