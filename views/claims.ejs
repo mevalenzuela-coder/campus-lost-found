@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Claims | Campus Lost and Found</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/claim.css">
+</head>
+<body>
+    <div class="claim-page claim-page-wide">
+        <div class="claim-page-head">
+            <div>
+                <p class="claim-eyebrow">Campus Lost and Found</p>
+                <h1>My Claims</h1>
+                <p class="claim-subtitle">
+                    Track the ownership claims you submitted and their review status.
+                </p>
+            </div>
+
+            <nav class="claim-nav" aria-label="Claims navigation">
+                <a href="/items">Browse Items</a>
+                <a href="/report">+ Report an Item</a>
+                <a href="/dashboard">Dashboard</a>
+                <form action="/logout" method="POST" class="claim-inline-form">
+                    <button type="submit" class="claim-link-button">Logout</button>
+                </form>
+            </nav>
+        </div>
+
+        <% if (submitted) { %>
+            <div class="claim-alert claim-alert-success" role="status">
+                Your claim has been submitted. An administrator will review it.
+            </div>
+        <% } %>
+
+        <% if (notice === 'pending') { %>
+            <div class="claim-alert claim-alert-info" role="status">
+                You already have a pending claim for that item. Please wait for it to be reviewed.
+            </div>
+        <% } %>
+
+        <% if (notice === 'cancelled') { %>
+            <div class="claim-alert claim-alert-success" role="status">
+                Your pending claim has been cancelled. You can submit a new claim if the item is still available.
+            </div>
+        <% } %>
+
+        <% if (notice === 'cancel-failed') { %>
+            <div class="claim-alert claim-alert-error" role="alert">
+                That claim could not be cancelled. It may already have been reviewed.
+            </div>
+        <% } %>
+
+        <% if (claims.length === 0) { %>
+            <div class="claim-empty">
+                <p>You have not submitted any claims yet.</p>
+                <p><a href="/items">Browse found items to make a claim.</a></p>
+            </div>
+        <% } else { %>
+            <div class="claim-list">
+                <% claims.forEach(claim => { %>
+                    <article class="claim-card">
+                        <div class="claim-card-head">
+                            <h2><%= claim.item_name %></h2>
+                            <span class="claim-status claim-status-<%= claim.status.toLowerCase() %>">
+                                <%= claim.status %>
+                            </span>
+                        </div>
+
+                        <%- include('partials/item-image', { item: claim }) %>
+
+                        <dl class="claim-meta">
+                            <div>
+                                <dt>Item status</dt>
+                                <dd>
+                                    <span class="claim-status claim-status-<%= claim.item_status.toLowerCase() %>">
+                                        <%= claim.item_status %>
+                                    </span>
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Category</dt>
+                                <dd><%= claim.category %></dd>
+                            </div>
+                            <div>
+                                <dt>Location</dt>
+                                <dd><%= claim.location %></dd>
+                            </div>
+                            <div>
+                                <dt>Date found</dt>
+                                <dd><%= claim.item_date %></dd>
+                            </div>
+                            <div>
+                                <dt>Reported by</dt>
+                                <dd><%= claim.reporter_name %></dd>
+                            </div>
+                            <div>
+                                <dt>Submitted</dt>
+                                <dd><%= claim.submitted_at %></dd>
+                            </div>
+                            <% if (claim.reviewed_at) { %>
+                                <div>
+                                    <dt><%= claim.status === 'Cancelled' ? 'Cancelled' : 'Reviewed' %></dt>
+                                    <dd><%= claim.reviewed_at %></dd>
+                                </div>
+                            <% } %>
+                            <% if (claim.contact) { %>
+                                <div>
+                                    <dt>Your contact</dt>
+                                    <dd><%= claim.contact %></dd>
+                                </div>
+                            <% } %>
+                        </dl>
+
+                        <% if (claim.status === 'Approved' && claim.item_status === 'Claimed') { %>
+                            <div class="claim-alert claim-alert-success" role="status">
+                                Your claim was approved. Contact the lost and found office to arrange pickup.
+                            </div>
+                        <% } else if (claim.status === 'Approved' && claim.item_status === 'Returned') { %>
+                            <div class="claim-alert claim-alert-info" role="status">
+                                This item has been marked as returned.
+                            </div>
+                        <% } %>
+
+                        <div class="claim-block">
+                            <h3>Your proof of ownership</h3>
+                            <p><%= claim.proof %></p>
+                        </div>
+
+                        <% if (claim.admin_note) { %>
+                            <div class="claim-block claim-block-note">
+                                <h3>Admin note</h3>
+                                <p><%= claim.admin_note %></p>
+                            </div>
+                        <% } %>
+
+                        <% if (claim.status === 'Pending') { %>
+                            <div class="claim-card-actions">
+                                <form action="/claims/<%= claim.id %>/cancel" method="POST" class="claim-inline-form" onsubmit="return confirm('Cancel this pending claim request?');">
+                                    <button type="submit" class="claim-button claim-button-cancel">Cancel Claim</button>
+                                </form>
+                            </div>
+                        <% } else if ((claim.status === 'Rejected' || claim.status === 'Cancelled') && claim.item_status === 'Approved') { %>
+                            <div class="claim-card-actions">
+                                <a href="/items/<%= claim.item_id %>/claim" class="claim-button">
+                                    Submit a New Claim
+                                </a>
+                            </div>
+                        <% } %>
+                    </article>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

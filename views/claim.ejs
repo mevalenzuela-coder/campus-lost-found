@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Item | Campus Lost and Found</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/claim.css">
+</head>
+<body class="claim-item-page">
+    <%
+        const categoryIcons = {
+            Electronics: '💻',
+            Documents: '🗂️',
+            Clothing: '👕',
+            Accessories: '🎒',
+            Bags: '🎒',
+            'School Supplies': '✏️',
+            Others: '📦'
+        };
+        const icon = categoryIcons[item.category] || '📦';
+        const firstName = String(user.name || 'Student').trim().split(/\s+/)[0];
+        const dateParts = String(item.item_date || '').split('-');
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        const displayDate = dateParts.length === 3
+            ? monthNames[Number(dateParts[1]) - 1] + ' ' + Number(dateParts[2]) + ', ' + dateParts[0]
+            : (item.item_date || '');
+        const noticeText = item.status === 'Pending'
+            ? 'This item report is waiting for admin approval. You can submit your claim now and an administrator will review the report and your request together.'
+            : 'This item is approved and ready to be claimed. Click the Claim Item button above to submit a claim request.';
+    %>
+
+    <div class="claim-topbar">
+        <div class="claim-topbar-inner">
+            <a class="claim-brand" href="/">
+                <span class="claim-brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 21s7-5.1 7-11a7 7 0 1 0-14 0c0 5.9 7 11 7 11Z"></path>
+                        <circle cx="12" cy="10" r="2.4"></circle>
+                    </svg>
+                </span>
+                <span class="claim-brand-text">Campus Lost and Found</span>
+            </a>
+
+            <div class="claim-topnav" role="navigation" aria-label="Main navigation">
+                <a href="/">Home</a>
+                <a href="/items">Items</a>
+                <a href="/claims">My Claims</a>
+                <% if (user.role === 'admin') { %>
+                    <a href="/admin">Admin</a>
+                <% } %>
+
+                <details class="claim-user">
+                    <summary>
+                        <span>Hello, <%= firstName %></span>
+                        <svg class="claim-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
+                    </summary>
+                    <div class="claim-user-menu">
+                        <a href="/dashboard">Dashboard</a>
+                        <a href="/claims">My Claims</a>
+                        <% if (user.role === 'admin') { %>
+                            <a href="/admin">Admin panel</a>
+                        <% } %>
+                        <form action="/logout" method="POST" class="claim-logout-form">
+                            <button type="submit">Logout</button>
+                        </form>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <main class="claim-shell">
+        <a class="claim-back" href="/items">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m15 18-6-6 6-6"></path>
+            </svg>
+            Back to Items
+        </a>
+
+        <% if (error) { %>
+            <div class="claim-alert claim-alert-error" role="alert"><%= error %></div>
+        <% } %>
+
+        <div class="claim-hero">
+            <div class="claim-media">
+                <% if (item.image_path) { %>
+                    <img
+                        class="claim-media-img"
+                        src="<%= item.image_path %>"
+                        alt="<%= item.item_name %>"
+                    >
+                <% } else { %>
+                    <div class="claim-media-empty" role="img" aria-label="<%= item.item_name %> (no photo)">
+                        <span class="claim-media-empty-icon"><%= icon %></span>
+                        <span class="claim-media-empty-label">No photo uploaded</span>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="claim-details">
+                <h1 class="claim-title"><%= item.item_name %></h1>
+                <span class="claim-found-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m20 6-11 11-5-5"></path>
+                    </svg>
+                    <%= item.report_type %>
+                </span>
+
+                <dl class="claim-facts">
+                    <div class="claim-fact">
+                        <dt>Category:</dt>
+                        <dd><%= item.category %></dd>
+                    </div>
+                    <div class="claim-fact">
+                        <dt>Location Found:</dt>
+                        <dd><%= item.location %></dd>
+                    </div>
+                    <div class="claim-fact">
+                        <dt>Date Found:</dt>
+                        <dd><%= displayDate %></dd>
+                    </div>
+                    <div class="claim-fact claim-fact-description">
+                        <dt>Description:</dt>
+                        <dd><%= item.description || 'No description provided.' %></dd>
+                    </div>
+                    <div class="claim-fact claim-fact-status">
+                        <dt>Status:</dt>
+                        <dd>
+                            <span class="claim-status claim-status-<%= item.status.toLowerCase() %> claim-status-lg">
+                                <%= item.status %>
+                            </span>
+                        </dd>
+                    </div>
+                </dl>
+
+                <button type="submit" form="claim-form" class="claim-primary claim-primary-hero">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m20 6-11 11-5-5"></path>
+                    </svg>
+                    Claim Item
+                </button>
+            </div>
+        </div>
+
+        <div class="claim-notice">
+            <span class="claim-notice-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 11v5"></path>
+                    <path d="M12 8h.01"></path>
+                </svg>
+            </span>
+            <p><%= noticeText %></p>
+        </div>
+
+        <form id="claim-form" action="/items/<%= item.id %>/claim" method="POST" class="claim-request">
+            <div class="claim-request-head">
+                <p class="claim-request-eyebrow">Claim request</p>
+                <h2>Tell us why this item is yours</h2>
+                <p>An administrator will review your request before the item is released.</p>
+            </div>
+
+            <div class="claim-request-fields">
+                <div class="claim-field">
+                    <label for="proof">
+                        Proof of ownership
+                        <span class="claim-required">*</span>
+                    </label>
+                    <p class="claim-help">
+                        Describe details only the owner would know, such as distinguishing marks,
+                        contents, a serial number, or when and where you lost it.
+                    </p>
+                    <textarea
+                        id="proof"
+                        name="proof"
+                        rows="6"
+                        minlength="10"
+                        maxlength="1000"
+                        required
+                        placeholder="Explain why this item belongs to you..."
+                    ><%= proof || '' %></textarea>
+                    <p class="claim-counter" id="proof-counter">
+                        <span id="proof-count"><%= (proof || '').length %></span> / 1000 characters
+                        (minimum 10)
+                    </p>
+                </div>
+
+                <div class="claim-field">
+                    <label for="contact">
+                        Contact details
+                        <span class="claim-optional">(optional)</span>
+                    </label>
+                    <p class="claim-help">
+                        How should the admin reach you if your claim is approved?
+                    </p>
+                    <input
+                        type="text"
+                        id="contact"
+                        name="contact"
+                        maxlength="150"
+                        value="<%= contact || '' %>"
+                        placeholder="e.g. your phone number or email address"
+                    >
+                </div>
+            </div>
+
+            <div class="claim-form-actions">
+                <button type="submit" class="claim-primary claim-primary-submit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m20 6-11 11-5-5"></path>
+                    </svg>
+                    Submit Claim
+                </button>
+                <a href="/items" class="claim-cancel">Cancel</a>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        (function () {
+            var proof = document.getElementById('proof');
+            var proofCount = document.getElementById('proof-count');
+            var proofCounter = document.getElementById('proof-counter');
+
+            if (!proof || !proofCount) {
+                return;
+            }
+
+            function updateCount() {
+                var length = proof.value.length;
+                proofCount.textContent = length;
+
+                if (proofCounter) {
+                    proofCounter.classList.toggle('is-invalid', length > 0 && length < 10);
+                }
+            }
+
+            proof.addEventListener('input', updateCount);
+            updateCount();
+        })();
+    </script>
+</body>
+</html>

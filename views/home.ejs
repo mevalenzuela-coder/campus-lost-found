@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CampusFind | Lost and Found</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/claim.css">
 
     <style>
         * { box-sizing: border-box; }
@@ -199,6 +200,24 @@
             font-size: 42px;
         }
 
+        .item-card-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .item-card-action {
+            padding: 0 14px 14px;
+        }
+
+        .item-card-action .claim-button {
+            margin-top: 0;
+        }
+
+        .item-card-action a.claim-status {
+            text-decoration: none;
+        }
+
         .item-info { padding: 14px; }
 
         .status {
@@ -271,6 +290,10 @@
                 <a href="/dashboard">Dashboard</a>
                 <a href="/report" class="report-link">+ Report</a>
 
+                <% if (user.role === 'user') { %>
+                    <a href="/claims">My Claims</a>
+                <% } %>
+
                 <% if (user.role === 'admin') { %>
                     <a href="/admin">Admin</a>
                 <% } %>
@@ -323,6 +346,16 @@
         </div>
 
         <div class="items-grid">
+            <%
+                const categoryIcons = {
+                    Electronics: '💻',
+                    Documents: '🗂️',
+                    Clothing: '👕',
+                    Accessories: '🎒',
+                    'School Supplies': '✏️',
+                    Others: '📦'
+                };
+            %>
             <% if (recentItems.length === 0) { %>
                 <div class="empty-state">
                     <h3>No approved items yet</h3>
@@ -331,24 +364,60 @@
             <% } %>
 
             <% recentItems.forEach(item => { %>
-                <a class="item-card" href="/items">
-                    <div class="item-image">📦</div>
+                <%
+                    const claimState = myClaimStatuses
+                        ? myClaimStatuses[item.id]
+                        : null;
+                    const canClaim = item.report_type === 'Found'
+                        && user
+                        && user.role === 'user'
+                        && Number(user.id) !== Number(item.user_id)
+                        && item.status === 'Approved';
+                %>
+                <div class="item-card">
+                    <a class="item-card-link" href="/items">
+                        <% if (item.image_path) { %>
+                            <img src="<%= item.image_path %>" alt="<%= item.item_name %>" class="item-image" style="width: 100%; height: 145px; padding: 6px; background: #f8fafc; object-fit: contain;">
+                        <% } else { %>
+                            <div class="item-image"><%= categoryIcons[item.category] || '📦' %></div>
+                        <% } %>
 
-                    <div class="item-info">
-                        <span class="status <%= item.report_type === 'Lost' ? 'status-lost' : 'status-found' %>">
-                            <%= item.report_type %>
-                        </span>
+                        <div class="item-info">
+                            <span class="status <%= item.report_type === 'Lost' ? 'status-lost' : 'status-found' %>">
+                                <%= item.report_type %>
+                            </span>
 
-                        <h3><%= item.item_name %></h3>
+                            <h3><%= item.item_name %></h3>
 
-                        <div class="item-meta">
-                            📍 <%= item.location || 'Location not specified' %><br>
-                            👤 <%= item.reporter_name || 'Campus member' %>
+                            <div class="item-meta">
+                                📍 <%= item.location || 'Location not specified' %><br>
+                                👤 <%= item.reporter_name || 'Campus member' %>
+                            </div>
+
+                            <span class="category"><%= item.category || 'Other' %></span>
                         </div>
+                    </a>
 
-                        <span class="category"><%= item.category || 'Other' %></span>
-                    </div>
-                </a>
+                    <% if (item.report_type === 'Found' && user && user.role === 'user' && Number(user.id) === Number(item.user_id)) { %>
+                        <div class="item-card-action">
+                            <span class="claim-status claim-status-cancelled" title="You cannot claim an item you reported yourself.">
+                                Your report
+                            </span>
+                        </div>
+                    <% } else if (canClaim && claimState === 'Pending') { %>
+                        <div class="item-card-action">
+                            <a href="/claims" class="claim-pending">Claim Pending</a>
+                        </div>
+                    <% } else if (canClaim && claimState === 'Approved') { %>
+                        <div class="item-card-action">
+                            <a href="/claims" class="claim-status claim-status-approved">Claim Approved</a>
+                        </div>
+                    <% } else if (canClaim) { %>
+                        <div class="item-card-action">
+                            <a href="/items/<%= item.id %>/claim" class="claim-button">Claim Item</a>
+                        </div>
+                    <% } %>
+                </div>
             <% }) %>
         </div>
     </section>

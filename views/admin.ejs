@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/claim.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Campus Lost and Found</title>
@@ -41,7 +42,26 @@
         <h1>Admin Dashboard</h1>
         <p>Welcome, <strong><%= user.name %></strong>!</p>
 
-        <p><a href="/dashboard">User Dashboard</a></p>
+        <p>
+            <a href="/dashboard">User Dashboard</a> |
+            <a href="/items">Item Reports</a> |
+            <a href="/admin/claims">All Claims</a>
+        </p>
+
+        <% if (notice === 'claim-approved') { %>
+            <div class="claim-alert claim-alert-success" role="status">
+                Claim approved. The item is now marked as <strong>Claimed</strong>,
+                and any other pending claims for it were rejected.
+            </div>
+        <% } else if (notice === 'claim-rejected') { %>
+            <div class="claim-alert claim-alert-info" role="status">
+                Claim rejected. The claimant can review the note in their claim history.
+            </div>
+        <% } else if (notice === 'item-returned') { %>
+            <div class="claim-alert claim-alert-success" role="status">
+                Item marked as <strong>Returned</strong>.
+            </div>
+        <% } %>
 
         <h2>Pending Item Reports</h2>
         <p>Review each submitted report and approve valid lost or found items.</p>
@@ -53,6 +73,7 @@
         <% items.forEach(item => { %>
             <div class="item">
                 <h3><%= item.item_name %></h3>
+                <%- include('partials/item-image', { item: item }) %>
                 <p><strong>Type:</strong> <%= item.report_type %></p>
                 <p><strong>Description:</strong> <%= item.description %></p>
                 <p><strong>Category:</strong> <%= item.category %></p>
@@ -65,6 +86,71 @@
 
                 <form action="/admin/approve/<%= item.id %>" method="POST">
                     <button type="submit">Approve Report</button>
+                </form>
+            </div>
+        <% }) %>
+
+        <h2 class="claim-section-title">Pending Claims</h2>
+        <p>Review ownership claims submitted for found items. <a href="/admin/claims">View all claim requests</a>.</p>
+
+        <% if (pendingClaims.length === 0) { %>
+            <p>No pending claims to review.</p>
+        <% } %>
+
+        <% pendingClaims.forEach(claim => { %>
+            <div class="item">
+                <h3><%= claim.item_name %> <span class="claim-status claim-status-pending">Pending</span></h3>
+                <%- include('partials/item-image', { item: claim }) %>
+                <p><strong>Claimed by:</strong> <%= claim.claimant_name %> (<%= claim.claimant_email %>)</p>
+                <p><strong>Contact:</strong> <%= claim.contact || 'Not provided' %></p>
+                <p><strong>Proof of ownership:</strong><br><%= claim.proof %></p>
+                <p><strong>Item description:</strong> <%= claim.description %></p>
+                <p>
+                    <strong>Item report status:</strong>
+                    <span class="claim-status claim-status-<%= claim.item_status.toLowerCase() %>"><%= claim.item_status %></span>
+                </p>
+                <p><strong>Category:</strong> <%= claim.category %></p>
+                <p><strong>Location:</strong> <%= claim.location %></p>
+                <p><strong>Date:</strong> <%= claim.item_date %></p>
+                <p><strong>Submitted:</strong> <%= claim.submitted_at %></p>
+                <div class="claim-actions">
+                    <% if (claim.item_status === 'Approved') { %>
+                        <form action="/admin/claims/<%= claim.id %>/approve" method="POST" class="claim-inline-form" onsubmit="return confirm('Approve this claim? The item will be marked as Claimed.');">
+                            <button type="submit" class="claim-approve">Approve Claim</button>
+                        </form>
+                    <% } else { %>
+                        <p><em>This claim cannot be approved while the item is <%= claim.item_status.toLowerCase() %>.</em></p>
+                    <% } %>
+                    <form action="/admin/claims/<%= claim.id %>/reject" method="POST" class="claim-inline-form claim-reject-form">
+                        <input type="text" name="admin_note" maxlength="255" placeholder="Reason for rejection (optional)" aria-label="Reason for rejection">
+                        <button type="submit" class="claim-reject">Reject Claim</button>
+                    </form>
+                </div>
+            </div>
+        <% }) %>
+
+        <h2 class="claim-section-title">Claimed Items</h2>
+        <p>Items with an approved claim. Mark an item as returned once it has been handed over.</p>
+
+        <% if (claimedItems.length === 0) { %>
+            <p>No claimed items waiting to be returned.</p>
+        <% } %>
+
+        <% claimedItems.forEach(item => { %>
+            <div class="item">
+                <h3><%= item.item_name %></h3>
+                <%- include('partials/item-image', { item: item }) %>
+                <p><strong>Claimant:</strong> <%= item.claimant_name || 'Unknown' %></p>
+                <p><strong>Reported by:</strong> <%= item.reporter_name %></p>
+                <p><strong>Category:</strong> <%= item.category %></p>
+                <p><strong>Location:</strong> <%= item.location %></p>
+                <p><strong>Date:</strong> <%= item.item_date %></p>
+                <p>
+                    <strong>Status:</strong>
+                    <span class="claim-status claim-status-<%= item.status.toLowerCase() %>"><%= item.status %></span>
+                </p>
+                <form action="/admin/items/<%= item.id %>/return" method="POST" class="claim-inline-form" onsubmit="return confirm('Mark this item as returned?');">
+                    <button type="submit" class="claim-return">Mark as Returned</button>
                 </form>
             </div>
         <% }) %>

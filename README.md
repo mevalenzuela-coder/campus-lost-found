@@ -15,14 +15,21 @@ The Campus Lost and Found System is a web-based application developed to help st
 
 User registration and login
 Session management and logout
-Report lost or found items
+Report lost or found items with an optional photo
+Item photos shown on the homepage, item list, claim page, and admin dashboard
 View submitted item reports
 Search item reports by name, description, category, and location
 Filter item reports by Lost or Found type
 Filter item reports by status
 Input validation for forms
+Submit claim requests for approved found items
+Cancel pending claim requests
+View personal claim history and claim status
 Admin dashboard for reviewing pending item reports
 Admin approval of pending item reports
+Dedicated admin claims page for reviewing all claim requests
+Admin approval or rejection of ownership claims
+Mark claimed items as returned
 Role-based access restrictions for admin pages
 MySQL database for storing user and item information
 
@@ -70,7 +77,9 @@ npm install
 5. Choose the `schema.sql` file from the project folder.
 6. Click **Import** or **Go** to create the `campus_lost_found` database and its required tables.
 
-The database schema creates the `users` and `items` tables needed by the application.
+The database schema creates the `users`, `items`, and `claims` tables needed by the application.
+
+The app also upgrades older databases automatically on startup: it creates the `claims` table if it is missing and adds the `items.image_path` column used for item photos. Uploaded images are stored in `public/uploads/`.
 
 ### 4. Configure Environment Variables
 

@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/claim.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item Reports | Campus Lost and Found</title>
@@ -49,7 +50,16 @@
 
         <p>
             <a href="/report">+ Report an Item</a> |
-            <a href="/dashboard">Dashboard</a>
+            <a href="/dashboard">Dashboard</a> |
+            <a href="/claims">My Claims</a>
+        </p>
+
+        <% if (claimError) { %>
+            <div class="claim-alert claim-alert-error" role="alert"><%= claimError %></div>
+        <% } %>
+
+        <p class="claim-help">
+            Found items can be claimed once an admin approves the report. You cannot claim an item you reported yourself.
         </p>
 
         <form action="/items" method="GET" class="filters">
@@ -87,28 +97,58 @@
         <% items.forEach(item => { %>
             <div class="item">
                 <h2><%= item.item_name %></h2>
-                <p><strong>Type:</strong> <%= item.report_type %></p>
+                <%- include('partials/item-image', { item: item }) %>
+                <p>
+                    <strong>Type:</strong>
+                    <span class="claim-status claim-status-<%= item.report_type.toLowerCase() %>"><%= item.report_type %></span>
+                </p>
                 <p><strong>Description:</strong> <%= item.description %></p>
                 <p><strong>Category:</strong> <%= item.category %></p>
                 <p><strong>Location:</strong> <%= item.location %></p>
                 <p><strong>Date:</strong>
                     <%= String(item.date_lost_or_found).slice(0, 10) %>
                 </p>
-                <p><strong>Status:</strong> <%= item.status %></p>
+                <p>
+                    <strong>Status:</strong>
+                    <span class="claim-status claim-status-<%= item.status.toLowerCase() %>"><%= item.status %></span>
+                </p>
                 <p><strong>Reported by:</strong> <%= item.reporter_name %></p>
-                
-<% if (Number(user.id) === Number(item.user_id) && item.status === 'Pending') { %>
-    <a href="/items/<%= item.id %>/edit" class="edit-button">
-        Edit Item
-    </a>
+                <% const claimState = myClaimStatuses ? myClaimStatuses[item.id] : null; %>
 
-    <form action="/items/<%= item.id %>/delete" method="POST"
-          onsubmit="return confirm('Are you sure you want to delete this report?');">
-        <button type="submit" class="delete-button">
-            Delete Item
-        </button>
-    </form>
-<% } %>
+                <div class="item-actions">
+                    <% if (Number(user.id) === Number(item.user_id) && item.status === 'Pending') { %>
+                        <a href="/items/<%= item.id %>/edit" class="edit-button">
+                            Edit Item
+                        </a>
+
+                        <form action="/items/<%= item.id %>/delete" method="POST"
+                              onsubmit="return confirm('Are you sure you want to delete this report?');">
+                            <button type="submit" class="delete-button">
+                                Delete Item
+                            </button>
+                        </form>
+                    <% } %>
+
+                    <% if (item.report_type === 'Found' && user.role === 'user') { %>
+                        <% if (Number(user.id) === Number(item.user_id)) { %>
+                            <span class="claim-status claim-status-cancelled" title="You cannot claim an item you reported yourself.">
+                                Your report
+                            </span>
+                        <% } else if (claimState === 'Pending') { %>
+                            <a href="/claims" class="claim-pending">Claim Pending</a>
+                        <% } else if (claimState === 'Approved') { %>
+                            <span class="claim-status claim-status-approved">Claim Approved</span>
+                        <% } else if (item.status === 'Approved') { %>
+                            <a href="/items/<%= item.id %>/claim" class="claim-button">Claim Item</a>
+                        <% } else if (item.status === 'Pending') { %>
+                            <span class="claim-status claim-status-pending">Claim after approval</span>
+                        <% } else { %>
+                            <span class="claim-status claim-status-<%= item.status.toLowerCase() %>">
+                                Claim unavailable
+                            </span>
+                        <% } %>
+                    <% } %>
+                </div>
 
             </div>
         <% }) %>

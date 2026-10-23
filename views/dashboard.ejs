@@ -57,6 +57,9 @@
 
         <p><a href="/report">Report a Lost or Found Item</a></p>
         <p><a href="/items">View All Item Reports</a></p>
+        <% if (user.role === 'user') { %>
+            <p><a href="/claims">My Claims</a></p>
+        <% } %>
         
         <form action="/logout" method="POST">
             <button type="submit">Logout</button>
