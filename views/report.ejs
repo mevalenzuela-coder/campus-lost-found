@@ -1,5 +1,4 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/css/style.css">
@@ -21,12 +20,15 @@
             border-radius: 10px;
         }
         h1 { color: #234b76; }
-        label { display: block; margin-top: 15px; }
+        label { display: block; margin-top: 15px; font-weight: 600; }
         input, textarea, select {
             box-sizing: border-box;
             width: 100%;
             padding: 11px;
             margin-top: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font: inherit;
         }
         button {
             width: 100%;
@@ -36,18 +38,31 @@
             color: white;
             border: none;
             cursor: pointer;
+            border-radius: 8px;
+            font: inherit;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #1e3a8a;
         }
         .message { color: #b42318; }
         a { color: #234b76; }
+        .hint {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Report a Lost or Found Item</h1>
 
-        <p class="message"><%= error || '' %></p>
+        <% if (error) { %>
+            <p class="message"><%= error %></p>
+        <% } %>
 
-        <form action="/report" method="POST">
+        <form action="/report" method="POST" enctype="multipart/form-data">
             <label for="item_name">Item Name</label>
             <input type="text" id="item_name" name="item_name"
                    required maxlength="150">
@@ -82,6 +97,10 @@
                 <option value="Found">Found Item</option>
             </select>
 
+            <label for="item_image">Item Photo</label>
+            <input type="file" id="item_image" name="item_image" accept="image/*">
+            <p class="hint">Optional. JPG, PNG, GIF, or WebP up to 5MB.</p>
+
             <button type="submit">Submit Report</button>
         </form>
 
@@ -90,4 +109,3 @@
     </div>
 </body>
 </html>
-

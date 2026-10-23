@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Claims | Admin | Campus Lost and Found</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/claim.css">
+</head>
+<body>
+    <div class="claim-page claim-page-wide">
+        <div class="claim-page-head">
+            <div>
+                <p class="claim-eyebrow">Campus Lost and Found</p>
+                <h1>All Claims</h1>
+                <p class="claim-subtitle">
+                    Review every ownership claim, its details, and its current status.
+                </p>
+            </div>
+
+            <nav class="claim-nav" aria-label="Admin navigation">
+                <a href="/admin">Admin Dashboard</a>
+                <a href="/items">Item Reports</a>
+                <form action="/logout" method="POST" class="claim-inline-form">
+                    <button type="submit" class="claim-link-button">Logout</button>
+                </form>
+            </nav>
+        </div>
+
+        <% if (notice === 'claim-approved') { %>
+            <div class="claim-alert claim-alert-success" role="status">
+                Claim approved. The item is now marked as <strong>Claimed</strong>.
+            </div>
+        <% } else if (notice === 'claim-rejected') { %>
+            <div class="claim-alert claim-alert-info" role="status">
+                Claim rejected. The item report status was not changed.
+            </div>
+        <% } else if (notice === 'item-returned') { %>
+            <div class="claim-alert claim-alert-success" role="status">
+                Item marked as <strong>Returned</strong>.
+            </div>
+        <% } %>
+
+        <% if (claims.length === 0) { %>
+            <div class="claim-empty">
+                <p>No claim requests have been submitted yet.</p>
+            </div>
+        <% } else { %>
+            <div class="claim-list">
+                <% claims.forEach(claim => { %>
+                    <article class="claim-card">
+                        <div class="claim-card-head">
+                            <h2>
+                                <%= claim.item_name %>
+                                <span class="claim-status claim-status-<%= claim.item_status.toLowerCase() %>">
+                                    Item: <%= claim.item_status %>
+                                </span>
+                            </h2>
+                            <span class="claim-status claim-status-<%= claim.status.toLowerCase() %>">
+                                Claim: <%= claim.status %>
+                            </span>
+                        </div>
+
+                        <%- include('partials/item-image', { item: claim }) %>
+
+                        <dl class="claim-meta">
+                            <div>
+                                <dt>Claimant</dt>
+                                <dd><%= claim.claimant_name %> (<%= claim.claimant_email %>)</dd>
+                            </div>
+                            <div>
+                                <dt>Submitted</dt>
+                                <dd><%= claim.submitted_at %></dd>
+                            </div>
+                            <div>
+                                <dt>Category</dt>
+                                <dd><%= claim.category %></dd>
+                            </div>
+                            <div>
+                                <dt>Location</dt>
+                                <dd><%= claim.location %></dd>
+                            </div>
+                            <div>
+                                <dt>Date found</dt>
+                                <dd><%= claim.item_date %></dd>
+                            </div>
+                            <div>
+                                <dt>Contact</dt>
+                                <dd><%= claim.contact || 'Not provided' %></dd>
+                            </div>
+                            <% if (claim.reviewed_at) { %>
+                                <div>
+                                    <dt><%= claim.status === 'Cancelled' ? 'Cancelled' : 'Reviewed' %></dt>
+                                    <dd><%= claim.reviewed_at %></dd>
+                                </div>
+                            <% } %>
+                            <% if (claim.reviewer_name) { %>
+                                <div>
+                                    <dt>Reviewed by</dt>
+                                    <dd><%= claim.reviewer_name %></dd>
+                                </div>
+                            <% } %>
+                        </dl>
+
+                        <div class="claim-block">
+                            <h3>Proof of ownership</h3>
+                            <p><%= claim.proof %></p>
+                        </div>
+
+                        <div class="claim-block">
+                            <h3>Item description</h3>
+                            <p><%= claim.description %></p>
+                        </div>
+
+                        <% if (claim.admin_note) { %>
+                            <div class="claim-block claim-block-note">
+                                <h3>Admin note</h3>
+                                <p><%= claim.admin_note %></p>
+                            </div>
+                        <% } %>
+
+                        <% if (claim.status === 'Pending') { %>
+                            <div class="claim-actions">
+                                <% if (claim.item_status === 'Approved') { %>
+                                    <form action="/admin/claims/<%= claim.id %>/approve" method="POST" class="claim-inline-form" onsubmit="return confirm('Approve this claim? The item will be marked as Claimed.');">
+                                        <input type="hidden" name="return_to" value="/admin/claims">
+                                        <button type="submit" class="claim-approve">Approve Claim</button>
+                                    </form>
+                                <% } else { %>
+                                    <p><em>This claim cannot be approved while the item is <%= claim.item_status.toLowerCase() %>.</em></p>
+                                <% } %>
+                                <form action="/admin/claims/<%= claim.id %>/reject" method="POST" class="claim-inline-form claim-reject-form">
+                                    <input type="hidden" name="return_to" value="/admin/claims">
+                                    <input type="text" name="admin_note" maxlength="255" placeholder="Reason for rejection (optional)" aria-label="Reason for rejection">
+                                    <button type="submit" class="claim-reject">Reject Claim</button>
+                                </form>
+                            </div>
+                        <% } else if (claim.status === 'Approved' && claim.item_status === 'Claimed') { %>
+                            <div class="claim-actions">
+                                <form action="/admin/items/<%= claim.item_id %>/return" method="POST" class="claim-inline-form" onsubmit="return confirm('Mark this item as returned to the claimant?');">
+                                    <input type="hidden" name="return_to" value="/admin/claims">
+                                    <button type="submit" class="claim-return">Mark as Returned</button>
+                                </form>
+                            </div>
+                        <% } %>
+                    </article>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

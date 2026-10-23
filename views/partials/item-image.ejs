@@ -1,0 +1,24 @@
+<%
+    const categoryIcons = {
+        Electronics: '💻',
+        Documents: '🗂️',
+        Clothing: '👕',
+        Accessories: '🎒',
+        'School Supplies': '✏️',
+        Others: '📦'
+    };
+    const icon = categoryIcons[item.category] || '📦';
+%>
+<% if (item.image_path) { %>
+    <img
+        src="<%= item.image_path %>"
+        alt="<%= item.item_name %>"
+        class="item-photo"
+        loading="lazy"
+    >
+<% } else { %>
+    <div class="item-photo-placeholder" role="img" aria-label="<%= item.item_name %> (no photo)">
+        <span class="item-photo-icon"><%= icon %></span>
+        <span class="item-photo-label">No photo uploaded</span>
+    </div>
+<% } %>
